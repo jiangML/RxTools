@@ -6,8 +6,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,16 +16,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.vondear.rxtools.RxBarUtils;
-import com.vondear.rxtools.RxImageUtils;
-import com.vondear.rxtools.RxPermissionsUtils;
-import com.vondear.rxtools.RxPhotoUtils;
-import com.vondear.rxtools.RxSPUtils;
+import com.vondear.rxtools.RxBarTool;
+import com.vondear.rxtools.RxPhotoTool;
+import com.vondear.rxtools.RxSPTool;
 import com.vondear.rxtools.activity.ActivityBase;
-import com.vondear.rxtools.interfaces.onRequestPermissionsListener;
 import com.vondear.rxtools.view.RxTitle;
-import com.vondear.rxtools.view.dialog.RxDialog;
 import com.vondear.rxtools.view.dialog.RxDialogChooseImage;
+import com.vondear.rxtools.view.dialog.RxDialogScaleView;
 import com.vondear.rxtools.view.dialog.RxDialogSureCancel;
 import com.vondear.tools.R;
 import com.yalantis.ucrop.UCrop;
@@ -81,7 +76,7 @@ public class ActivityRxPhoto extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RxBarUtils.noTitle(this);
+        RxBarTool.noTitle(this);
         setContentView(R.layout.activity_von_photo);
         ButterKnife.bind(this);
         initView();
@@ -90,123 +85,72 @@ public class ActivityRxPhoto extends ActivityBase {
     protected void initView() {
         Resources r = mContext.getResources();
         resultUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
-                + r.getResourcePackageName(R.drawable.elves_ball) + "/"
-                + r.getResourceTypeName(R.drawable.elves_ball) + "/"
-                + r.getResourceEntryName(R.drawable.elves_ball));
+                + r.getResourcePackageName(R.drawable.circle_elves_ball) + "/"
+                + r.getResourceTypeName(R.drawable.circle_elves_ball) + "/"
+                + r.getResourceEntryName(R.drawable.circle_elves_ball));
 
         mRxTitle.setLeftFinish(mContext);
 
         mIvAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                initDialogOpenAvatar();
                 initDialogChooseImage();
             }
         });
         mIvAvatar.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                RxImageUtils.showBigImageView(mContext, resultUri);
+//                RxImageTool.showBigImageView(mContext, resultUri);
+                RxDialogScaleView rxDialogScaleView = new RxDialogScaleView(mContext);
+                rxDialogScaleView.setImageUri(resultUri);
+                rxDialogScaleView.show();
                 return false;
             }
         });
     }
 
-    /**
-     * 选择头像 弹窗
-     */
-    private void initDialogOpenAvatar() {
-        final RxDialog dialog1 = new RxDialog(this);
-        dialog1.getLayoutParams().gravity = Gravity.BOTTOM;
-        View dialogView1 = LayoutInflater.from(this).inflate(
-                R.layout.dialog_picker_pictrue, null);
-        TextView tv_camera = (TextView) dialogView1
-                .findViewById(R.id.tv_camera);
-        TextView tv_file = (TextView) dialogView1
-                .findViewById(R.id.tv_file);
-        TextView tv_cancelid = (TextView) dialogView1
-                .findViewById(R.id.tv_cancel);
-        tv_cancelid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                dialog1.cancel();
-            }
-        });
-        tv_camera.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                //请求Camera权限
-                RxPermissionsUtils.requestCamera(mContext, new onRequestPermissionsListener() {
-                    @Override
-                    public void onRequestBefore() {
-
-                    }
-
-                    @Override
-                    public void onRequestLater() {
-                        RxPhotoUtils.openCameraImage(ActivityRxPhoto.this);
-                        dialog1.cancel();
-                    }
-                });
-            }
-        });
-        tv_file.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                RxPhotoUtils.openLocalImage(ActivityRxPhoto.this);
-                dialog1.cancel();
-            }
-        });
-        dialog1.setContentView(dialogView1);
-        dialog1.show();
-    }
-
     private void initDialogChooseImage() {
         RxDialogChooseImage dialogChooseImage = new RxDialogChooseImage(mContext, TITLE);
-
         dialogChooseImage.show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RxPhotoUtils.GET_IMAGE_FROM_PHONE://选择相册之后的处理
+            case RxPhotoTool.GET_IMAGE_FROM_PHONE://选择相册之后的处理
                 if (resultCode == RESULT_OK) {
-//                    RxPhotoUtils.cropImage(ActivityUser.this, );// 裁剪图片
+//                    RxPhotoTool.cropImage(ActivityUser.this, );// 裁剪图片
                     initUCrop(data.getData());
                 }
 
                 break;
-            case RxPhotoUtils.GET_IMAGE_BY_CAMERA://选择照相机之后的处理
+            case RxPhotoTool.GET_IMAGE_BY_CAMERA://选择照相机之后的处理
                 if (resultCode == RESULT_OK) {
                    /* data.getExtras().get("data");*/
-//                    RxPhotoUtils.cropImage(ActivityUser.this, RxPhotoUtils.imageUriFromCamera);// 裁剪图片
-                    initUCrop(RxPhotoUtils.imageUriFromCamera);
+//                    RxPhotoTool.cropImage(ActivityUser.this, RxPhotoTool.imageUriFromCamera);// 裁剪图片
+                    initUCrop(RxPhotoTool.imageUriFromCamera);
                 }
 
                 break;
-            case RxPhotoUtils.CROP_IMAGE://普通裁剪后的处理
+            case RxPhotoTool.CROP_IMAGE://普通裁剪后的处理
                 Glide.with(mContext).
-                        load(RxPhotoUtils.cropImageUri).
+                        load(RxPhotoTool.cropImageUri).
                         diskCacheStrategy(DiskCacheStrategy.RESULT).
                         bitmapTransform(new CropCircleTransformation(mContext)).
                         thumbnail(0.5f).
-                        placeholder(R.drawable.elves_ball).
+                        placeholder(R.drawable.circle_elves_ball).
                         priority(Priority.LOW).
-                        error(R.drawable.elves_ball).
-                        fallback(R.drawable.elves_ball).
-                        dontAnimate().
+                        error(R.drawable.circle_elves_ball).
+                        fallback(R.drawable.circle_elves_ball).
                         into(mIvAvatar);
-//                RequestUpdateAvatar(new File(RxPhotoUtils.getRealFilePath(mContext, RxPhotoUtils.cropImageUri)));
+//                RequestUpdateAvatar(new File(RxPhotoTool.getRealFilePath(mContext, RxPhotoTool.cropImageUri)));
                 break;
 
             case UCrop.REQUEST_CROP://UCrop裁剪之后的处理
                 if (resultCode == RESULT_OK) {
                     resultUri = UCrop.getOutput(data);
                     roadImageView(resultUri, mIvAvatar);
-                    RxSPUtils.putContent(mContext, "AVATAR", resultUri.toString());
+                    RxSPTool.putContent(mContext, "AVATAR", resultUri.toString());
                 } else if (resultCode == UCrop.RESULT_ERROR) {
                     final Throwable cropError = UCrop.getError(data);
                 }
@@ -227,18 +171,17 @@ public class ActivityRxPhoto extends ActivityBase {
                 diskCacheStrategy(DiskCacheStrategy.RESULT).
                 bitmapTransform(new CropCircleTransformation(mContext)).
                 thumbnail(0.5f).
-                placeholder(R.drawable.elves_ball).
+                placeholder(R.drawable.circle_elves_ball).
                 priority(Priority.LOW).
-                error(R.drawable.elves_ball).
-                fallback(R.drawable.elves_ball).
-                dontAnimate().
+                error(R.drawable.circle_elves_ball).
+                fallback(R.drawable.circle_elves_ball).
                 into(imageView);
 
-        return (new File(RxPhotoUtils.getImageAbsolutePath(this, uri)));
+        return (new File(RxPhotoTool.getImageAbsolutePath(this, uri)));
     }
 
     private void initUCrop(Uri uri) {
-        //Uri destinationUri = RxPhotoUtils.createImagePathUri(this);
+        //Uri destinationUri = RxPhotoTool.createImagePathUri(this);
 
         SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
         long time = System.currentTimeMillis();
@@ -262,17 +205,17 @@ public class ActivityRxPhoto extends ActivityBase {
         //设置图片在切换比例时的动画
         options.setImageToCropBoundsAnimDuration(666);
         //设置裁剪窗口是否为椭圆
-//        options.setOvalDimmedLayer(true);
+        //options.setOvalDimmedLayer(true);
         //设置是否展示矩形裁剪框
-//        options.setShowCropFrame(false);
+        // options.setShowCropFrame(false);
         //设置裁剪框横竖线的宽度
-//        options.setCropGridStrokeWidth(20);
+        //options.setCropGridStrokeWidth(20);
         //设置裁剪框横竖线的颜色
-//        options.setCropGridColor(Color.GREEN);
+        //options.setCropGridColor(Color.GREEN);
         //设置竖线的数量
-//        options.setCropGridColumnCount(2);
+        //options.setCropGridColumnCount(2);
         //设置横线的数量
-//        options.setCropGridRowCount(1);
+        //options.setCropGridRowCount(1);
 
         UCrop.of(uri, destinationUri)
                 .withAspectRatio(1, 1)
@@ -284,13 +227,13 @@ public class ActivityRxPhoto extends ActivityBase {
     @OnClick(R.id.btn_exit)
     public void onClick() {
         final RxDialogSureCancel rxDialogSureCancel = new RxDialogSureCancel(this);
-        rxDialogSureCancel.getTvCancel().setOnClickListener(new View.OnClickListener() {
+        rxDialogSureCancel.getCancelView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rxDialogSureCancel.cancel();
             }
         });
-        rxDialogSureCancel.getTvSure().setOnClickListener(new View.OnClickListener() {
+        rxDialogSureCancel.getSureView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

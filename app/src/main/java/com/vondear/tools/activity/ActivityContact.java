@@ -6,13 +6,14 @@ import android.support.v7.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.vondear.tools.R;
 import com.vondear.rxtools.activity.ActivityBase;
+import com.vondear.rxtools.view.RxTitle;
 import com.vondear.rxtools.view.sidebar.PinnedHeaderDecoration;
 import com.vondear.rxtools.view.sidebar.WaveSideBarView;
+import com.vondear.tools.R;
 import com.vondear.tools.adapter.AdapterContactCity;
 import com.vondear.tools.bean.ModelContactCity;
-import com.vondear.tools.tools.LetterComparator;
+import com.vondear.tools.tools.ComparatorLetter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class ActivityContact extends ActivityBase {
     RecyclerView mRecyclerView;
     @BindView(R.id.side_view)
     WaveSideBarView mSideBarView;
+    @BindView(R.id.rx_title)
+    RxTitle mRxTitle;
 
     private AdapterContactCity mAdapterContactCity;
 
@@ -40,6 +43,8 @@ public class ActivityContact extends ActivityBase {
     }
 
     private void initView() {
+        mRxTitle.setLeftFinish(mContext);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         final PinnedHeaderDecoration decoration = new PinnedHeaderDecoration();
@@ -59,7 +64,7 @@ public class ActivityContact extends ActivityBase {
                 }.getType();
                 Gson gson = new Gson();
                 final List<ModelContactCity> list = gson.fromJson(ModelContactCity.DATA, listType);
-                Collections.sort(list, new LetterComparator());
+                Collections.sort(list, new ComparatorLetter());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

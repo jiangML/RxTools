@@ -4,10 +4,11 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.vondear.rxtools.RxActivityUtils;
-import com.vondear.rxtools.RxBarUtils;
+import com.vondear.rxtools.RxActivityTool;
+import com.vondear.rxtools.RxBarTool;
 import com.vondear.rxtools.activity.ActivityBase;
 import com.vondear.rxtools.view.RxShoppingView;
+import com.vondear.rxtools.view.RxTitle;
 import com.vondear.tools.R;
 
 import butterknife.BindView;
@@ -24,17 +25,21 @@ public class ActivityShoppingView extends ActivityBase {
     Button mBtnTakeOut;
     @BindView(R.id.activity_shopping_view)
     LinearLayout mActivityShoppingView;
+    @BindView(R.id.rx_title)
+    RxTitle mRxTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RxBarUtils.noTitle(this);
+        RxBarTool.noTitle(this);
         setContentView(R.layout.activity_shopping_view);
         ButterKnife.bind(this);
+        mRxTitle.setLeftFinish(mContext);
+
     }
 
     @OnClick(R.id.btn_take_out)
     public void onClick() {
-        RxActivityUtils.skipActivity(mContext, ActivityELMe.class);
+        RxActivityTool.skipActivity(mContext, ActivityELMe.class);
     }
 }

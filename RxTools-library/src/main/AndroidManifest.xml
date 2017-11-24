@@ -26,13 +26,27 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
-        <activity android:name=".activity.ActivityWebView"/>
-        <activity android:name=".activity.ActivityBase">
+        <activity android:name="com.vondear.rxtools.activity.ActivityWebView">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
-        <activity android:name=".activity.ActivityScanerCode">
+        <activity android:name="com.vondear.rxtools.activity.ActivityBase">
         </activity>
-        <activity android:name=".activity.ActivityCodeTool">
+        <activity android:name="com.vondear.rxtools.activity.ActivityScanerCode">
         </activity>
+        <activity android:name="com.vondear.rxtools.activity.ActivityCodeTool">
+        </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>
